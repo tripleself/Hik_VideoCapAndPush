@@ -1,0 +1,33 @@
+{
+    "model": {
+        "engine_path": "./models/20250928.plan",
+        "gpu_id": 0,
+        "num_class": 1
+    },
+    "detection": {
+        "confidence_threshold": 0.35,
+        "nms_threshold": 0.45
+    },
+    "tracking": {
+        "enable_tracking": true,
+        "frame_rate": 30,
+        "track_buffer": 240,
+        "track_class": 0,
+        "track_thresh": 0.15,
+        "high_thresh": 0.20,
+        "match_thresh": 0.9,
+        "unconfirmed_thresh": 0.75,
+        "low_match_thresh": 0.80
+    },
+    "counting": {
+        "enable_counting": true,
+        "detection_line_y": 800,
+        "min_target_area": 100,
+        "show_label": true
+    },
+    "output": {
+        "save_video": false,
+        "save_counting_log": false,
+        "show_performance_stats": true
+    }
+}
