@@ -1,0 +1,71 @@
+# ========================
+# 1. 编译输出与临时文件 (必须屏蔽)
+# ========================
+build/
+bin/
+out/
+x64/
+x86/
+Debug/
+Release/
+*.obj
+*.pdb
+*.ilk
+*.tlog
+*.idb
+*.ipch
+*.aps
+*.suo
+*.user
+*.res
+*.rc
+*.vmss
+
+# ========================
+# 2. 编辑器/IDE 配置
+# ========================
+.vs/
+.vscode/
+.idea/
+*.sln.docstates
+
+# ========================
+# 3. Qt 产生的文件
+# ========================
+Makefile*
+*.qmake.stash
+*.pro.user
+*.pro.user.*
+moc_*.cpp
+ui_*.h
+qrc_*.cpp
+
+# ========================
+# 4. Python & Anaconda
+# ========================
+__pycache__/
+*.py[cod]
+env/
+venv/
+.ipynb_checkpoints/
+
+# ========================
+# 5. AI 模型与大数据 (GitHub 单文件限制 100MB)
+# ========================
+# 如果 TensorRT 引擎文件很大，建议忽略，因为它是根据本机显卡生成的，不具备移植性
+*.engine
+# 训练过程的 checkpoint，通常不需要传
+*.pt
+*.pth
+# 视频录像文件
+*.mp4
+*.avi
+
+# ========================
+# 6. 特殊保留 (White List)
+# ========================
+# 如果你的 external/dll 目录下有些第三方 DLL 是必须传的，可以使用 ! 取消忽略
+# !external/dll/*.dll
+
+cursoerules.txt
+.cursorignore

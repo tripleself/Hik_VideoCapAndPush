@@ -1,0 +1,30 @@
+2.10
+1.增加 USBCAN 蓝色  USBCAN-C  红色外壳   USBCAN-E  MPCIe支持
+2.修正接收到dlc大于8的can帧出错的问题
+3.修改设备查找逻辑，已打开的设备不参与重排序，加快设备热插拔后的恢复速度
+
+2.09
+1.USBCanCmd.cpp  CANProxy_GetErrorInfo  CANProxy_ChannelReceive 函数修改为多线程调用安全
+2.USBCanCmd.cpp  增加LCMinipcie-43xS（SylixOS定制版）支持
+3.增加函数调用日志 CanCmdDebug.log.txt 文件第一个字符写2，打印应用程序对dll的api调用日志
+
+2.08
+1.LCUSBxxx驱动，移除“多次错误后，禁用USB设备”功能
+
+2.07
+1.LCUSBxxx驱动，增加 vid_0716&pid_2300 vid_0368&pid_2300 vid_8357&pid_2300 设备支持
+
+2.06
+1.增加64位库编译选项
+
+2.05
+1.以太网接口卡UDP模式增加离散IP设置
+
+2.04  
+1.ACUSB PCIe 卡支持CAN接收消息处理
+  通过	CAN_SetParam(m_hHandle,m_dwCANChannel,PARAM_EVENT_RCV_WMID,(PVOID)WM_CAN_RX);
+        CAN_SetParam(m_hHandle,m_dwCANChannel,PARAM_EVENT_RCV_WND,GetSafeHwnd());
+        设置需要接收消息的窗口句柄和消息ID
+
+2.03
+1.提高acusb 线程优先级

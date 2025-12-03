@@ -1,0 +1,120 @@
+{
+  "camera_count": 2,
+  "rtsp_server": {
+    "exe_path": "./rtspserver/rtsp-simple-server.exe",
+    "config_path": "./rtspserver/rtsp-simple-server.yml"
+  },
+  "hikvision_devices": [
+    {
+      "name": "一位端",
+      "ip": "192.168.0.64",
+      "port": 8553,
+      "username": "admin",
+      "password": "tkytjsyjs111",
+      "thermal_channel": 201,
+      "visible_channel": 101
+    },
+    {
+      "name": "二位端",
+      "ip": "192.168.0.64",
+      "port": 8553,
+      "username": "admin",
+      "password": "tkytjsyjs111",
+      "thermal_channel": 201,
+      "visible_channel": 101
+    }
+  ],
+  "test": [
+    {
+      "name": "一位端",
+      "ip": "127.0.0.1",
+      "port": 8554,
+      "username": "admin",
+      "password": "tkytjsyjs111",
+      "thermal_channel": "101",
+      "visible_channel": "201"
+    }
+  ],
+  "stream_urls": {
+    "local_ip1": "127.0.0.1",
+    "local_ip2": "127.0.0.1",
+    "rtsp_port": 8556,
+    "note": "使用单端口多路径方式，通过不同路径区分流"
+  },
+  "rtsp_streaming": {
+    "resolution": {
+      "width": 640,
+      "height": 360,
+      "note": "RTSP推流分辨率，如果设置为0则使用原始分辨率"
+    },
+    "fps": 25,
+    "note": "RTSP推流帧率"
+  },
+  "object_tracking": {
+    "yolo_detector": {
+      "model_path": "./models/fil.plan",
+      "gpu_id": 0,
+      "confidence_threshold": 0.25,
+      "nms_threshold": 0.25,
+      "num_classes": 1
+    },
+    "bytetrack_tracker": {
+      "frame_rate": 25,
+      "track_buffer": 30,
+      "use_reid": false,
+      "track_class": 0
+    },
+    "video_processing": {
+      "video_width": 1920,
+      "video_height": 1080,
+      "processing_fps": 25
+    },
+    "counting_module": {
+      "enable_counting": true,
+      "show_detection_line": true,
+      "detection_line_offset": 30,
+      "counting_output_path": "./counting_results.txt"
+    },
+    "display": {
+      "enable_display": true,
+      "window_name": "Object Tracking",
+      "window_width": 800,
+      "window_height": 600
+    },
+    "performance": {
+      "thread_sleep_ms": 10,
+      "enable_performance_stats": false,
+      "stats_update_interval": 30
+    },
+    "device_login": {
+      "max_retries": 10,
+      "retry_interval_ms": 3000,
+      "note": "登录失败的设备将按该配置进行串行重试，成功或用尽次数后再处理下一个设备"
+    },
+    "location_report": {
+      "enable_location_report": true,
+      "tcp_server_port": 12346,
+      "check_interval_ms": 100,
+      "rs422_port": {
+        "port_name": "COM1",
+        "baud_rate": 9600,
+        "data_bits": 8,
+        "stop_bits": 1,
+        "parity": 0,
+        "timeout": 1000
+      },
+      "can_device": {
+        "device_type": 2,
+        "device_index": 0,
+        "channel": 0,
+        "acceptance_code": "0x00000000",
+        "acceptance_mask": "0xFFFFFFFF",
+        "filter_mode": 0,
+        "work_mode": 1,
+        "btr_type": 1,
+        "btr0": "0x01",
+        "btr1": "0x1C"
+      }
+    }
+  }
+}

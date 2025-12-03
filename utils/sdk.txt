@@ -1,0 +1,142 @@
+实时测温
+设备配置好测温规则之后会自动检测配置的点、线或框的温度，实时测温即获取这些规则检测到的温度信息。热成像相关功能配置只支持在热成像通道上实现。热成像重载云台和热成像中载云台设备，有两个通道，第一个通道为可见光通道，第二个通道为热成像通道；热成像单目筒机只有一个通道，为热成像通道。
+
+目录
+实时测温
+目录 
+一、接口调用流程 
+二、示例代码 
+一、接口调用流程
+初始化NET_DVR_Init接口在程序开始是调用，一个程序只需要调用一次。 
+用户注册即登录设备，调用NET_DVR_Login_V40接口，每一台设备只需要登录一次。 
+温度检测是设备实现的，需要先配置设备相关测温参数，具体方法请参考测温配置流程说明。可以通过WEB网页直接访问设备进行配置，如果事先已经配置则可省略该过程。 
+获取实时温度：调用NET_DVR_StartRemoteConfig(命令: NET_DVR_GET_REALTIME_THERMOMETRY)建立长连接，检测到的实时温度信息(NET_DVR_THERMOMETRY_UPLOAD)在长连接接口设置的回调函数里面返回。 
+停止检测时或者程序退出前调用NET_DVR_StopRemoteConfig断开长连接，释放资源。 
+退出程序时调用NET_DVR_Logout注销设备，每一台设备调用一次。最后调用NET_DVR_Cleanup释放SDK所有资源。 
+二、示例代码
+#include <stdio.h>
+#include <iostream>
+#include "Windows.h"
+#include "HCNetSDK.h"
+using namespace std;
+
+//时间解析宏定义
+#define GET_YEAR(_time_)     (((_time_)>>26) + 2000) 
+#define GET_MONTH(_time_)    (((_time_)>>22) & 15)
+#define GET_DAY(_time_)      (((_time_)>>17) & 31)
+#define GET_HOUR(_time_)     (((_time_)>>12) & 31) 
+#define GET_MINUTE(_time_)   (((_time_)>>6)  & 63)
+#define GET_SECOND(_time_)   (((_time_)>>0)  & 63)
+
+void CALLBACK GetThermInfoCallback(DWORD dwType, void* lpBuffer, DWORD dwBufLen, void* pUserData)
+{
+    if (dwType == NET_SDK_CALLBACK_TYPE_DATA)
+    {
+        NET_DVR_THERMOMETRY_UPLOAD struThermometry = { 0 };
+        memcpy(&struThermometry, lpBuffer, sizeof(NET_DVR_THERMOMETRY_UPLOAD));
+
+        NET_DVR_TIME struAbsTime = { 0 };
+        struAbsTime.dwYear = GET_YEAR(struThermometry.dwAbsTime);
+        struAbsTime.dwMonth = GET_MONTH(struThermometry.dwAbsTime);
+        struAbsTime.dwDay = GET_DAY(struThermometry.dwAbsTime);
+        struAbsTime.dwHour = GET_HOUR(struThermometry.dwAbsTime);
+        struAbsTime.dwMinute = GET_MINUTE(struThermometry.dwAbsTime);
+        struAbsTime.dwSecond = GET_SECOND(struThermometry.dwAbsTime);
+
+        printf("实时测温结果:byRuleID[%d]wPresetNo[%d]byRuleCalibType[%d]byThermometryUnit[%d]byDataType[%d]dwAbsTime[%4.4d%2.2d%2.2d%2.2d%2.2d%2.2d]\n",
+            struThermometry.byRuleID, struThermometry.wPresetNo, struThermometry.byRuleCalibType, struThermometry.byThermometryUnit,
+            struThermometry.byDataType, struAbsTime.dwYear, struAbsTime.dwMonth, struAbsTime.dwDay, struAbsTime.dwHour, struAbsTime.dwMinute, struAbsTime.dwSecond);
+
+        //点测温
+        if (struThermometry.byRuleCalibType == 0)
+        {
+            printf("点测温信息:fTemperature[%f]\n", struThermometry.struPointThermCfg.fTemperature);
+        }
+
+        //框/线测温
+        if ((struThermometry.byRuleCalibType == 1) || (struThermometry.byRuleCalibType == 2))
+        {
+            printf("框/线测温信息:fMaxTemperature[%f]fMinTemperature[%f]fAverageTemperature[%f]fTemperatureDiff[%f]\n",
+                struThermometry.struLinePolygonThermCfg.fMaxTemperature, struThermometry.struLinePolygonThermCfg.fMinTemperature,
+                struThermometry.struLinePolygonThermCfg.fAverageTemperature, struThermometry.struLinePolygonThermCfg.fTemperatureDiff);
+        }
+    }
+    else if (dwType == NET_SDK_CALLBACK_TYPE_STATUS)
+    {
+        DWORD dwStatus = *(DWORD*)lpBuffer;
+        if (dwStatus == NET_SDK_CALLBACK_STATUS_SUCCESS)
+        {
+            printf("dwStatus:NET_SDK_CALLBACK_STATUS_SUCCESS\n");
+        }
+        else if (dwStatus == NET_SDK_CALLBACK_STATUS_FAILED)
+        {
+            DWORD dwErrCode = *(DWORD*)((char *)lpBuffer + 4);
+            printf("NET_DVR_GET_MANUALTHERM_INFO failed, Error code %d\n", dwErrCode);
+        }
+    }
+}
+
+void main()
+{
+    DWORD dwChannel = 2;  //热成像通道
+
+    //---------------------------------------
+    //初始化
+    NET_DVR_Init();
+
+    //设置连接时间与重连时间
+    NET_DVR_SetConnectTime(2000, 1);
+    NET_DVR_SetReconnect(10000, true);
+
+    //---------------------------------------
+    //注册设备(监听报警可以不注册)
+    LONG lUserID;
+    NET_DVR_DEVICEINFO_V30 struDeviceInfo;
+    lUserID = NET_DVR_Login_V30("10.8.10.199 ", 8000, "admin", "abcd1234", &struDeviceInfo);
+    if (lUserID < 0)
+    {
+        printf("Login failed, error code: %d\n", NET_DVR_GetLastError());
+        NET_DVR_Cleanup();
+        return;
+    }
+
+    //启动实时温度检测
+    NET_DVR_REALTIME_THERMOMETRY_COND struThermCond = { 0 };
+    struThermCond.dwSize = sizeof(struThermCond);
+    struThermCond.byRuleID = 1;       //规则ID，0代表获取全部规则，具体规则ID从1开始
+    struThermCond.dwChan = dwChannel; //从1开始，0xffffffff代表获取全部通道
+
+    LONG lHandle = NET_DVR_StartRemoteConfig(lUserID, NET_DVR_GET_REALTIME_THERMOMETRY, &struThermCond, sizeof(struThermCond), GetThermInfoCallback, NULL);
+    if (lHandle < 0)
+    {
+        printf("NET_DVR_GET_REALTIME_THERMOMETRY failed, error code: %d\n", NET_DVR_GetLastError());
+    }
+    else
+    {
+        printf("NET_DVR_GET_REALTIME_THERMOMETRY is successful!");
+    }
+
+    //输入q退出程序，否则一直运行
+    char c = 0;
+    while ('q' != c)
+    {
+        printf("input 'q' to quit\n");
+        printf("input: ");
+        scanf("%c", &c);
+    }
+
+    //关闭长连接配置接口所创建的句柄，释放资源
+    if (!NET_DVR_StopRemoteConfig(lHandle))
+    {
+        printf("NET_DVR_StopRemoteConfig failed, error code: %d\n", NET_DVR_GetLastError());
+    }
+
+    //注销用户，如果前面没有登录，该步骤则不需要
+    NET_DVR_Logout(lUserID);
+
+    //释放SDK资源
+    NET_DVR_Cleanup();
+
+    return;
+}
+

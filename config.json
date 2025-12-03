@@ -1,0 +1,103 @@
+{
+  "camera_count": 2,
+  "rtsp_server": {
+    "exe_path": "./rtspserver/rtsp-simple-server.exe",
+    "config_path": "./rtspserver/rtsp-simple-server.yml"
+  },
+  "hikvision_devices": [
+    {
+      "name": "一位端",
+      "ip": "192.168.0.64",
+      "port": 8553,
+      "username": "admin",
+      "password": "tkytjsyjs111",
+      "thermal_channel": 201,
+      "visible_channel": 101
+    },
+    {
+      "name": "二位端",
+      "ip": "192.168.0.64",
+      "port": 8553,
+      "username": "admin",
+      "password": "tkytjsyjs111",
+      "thermal_channel": 201,
+      "visible_channel": 101
+    }
+  ],
+  "test": [
+    {
+      "name": "一位端",
+      "ip": "127.0.0.1",
+      "port": 8554,
+      "username": "admin",
+      "password": "tkytjsyjs111",
+      "thermal_channel": "101",
+      "visible_channel": "201"
+    }
+  ],
+  "stream_urls": {
+    "local_ip1": "127.0.0.1",
+    "local_ip2": "127.0.0.2",
+    "rtsp_port": 8556,
+    "note": "使用单端口多路径方式，通过不同路径区分流"
+  },
+  "rtsp_streaming": {
+    "resolution": {
+      "width": 1280,
+      "height": 720,
+      "note": "RTSP推流分辨率，如果设置为0则使用原始分辨率"
+    },
+    "fps": 25,
+    "note": "RTSP推流帧率"
+  },
+  "object_tracking": {
+    "note": "目标检测与追踪的核心参数已移至 tracking_config.json",
+    "video_processing": {
+      "video_width": 1280,
+      "video_height": 720,
+      "processing_fps": 25
+    },
+    "display": {
+      "enable_display": true,
+      "window_name": "Object Tracking",
+      "window_width": 800,
+      "window_height": 600
+    },
+    "performance": {
+      "thread_sleep_ms": 10,
+      "enable_performance_stats": false,
+      "stats_update_interval": 30
+    },
+    "device_login": {
+      "max_retries": 10,
+      "retry_interval_ms": 3000,
+      "note": "登录失败的设备将按该配置进行串行重试，成功或用尽次数后再处理下一个设备"
+    },
+    "location_report": {
+      "enable_location_report": true,
+      "tcp_server_port": 12346,
+      "check_interval_ms": 100,
+      "rs422_port": {
+        "port_name": "COM6",
+        "baud_rate": 9600,
+        "data_bits": 8,
+        "stop_bits": 1,
+        "parity": 0,
+        "timeout": 1000
+      }
+    }
+  },
+  "video_save": {
+    "enable_video_save": true,
+    "video_save_path": "D:/RailwayVideos/",
+    "max_file_size_mb": 1024,
+    "max_storage_gb": 600,
+    "cleanup_size_gb": 40,
+    "note": "Video save configuration using Hikvision SDK: enable_video_save controls saving, video_save_path is save directory, max_file_size_mb is SDK auto-split threshold, max_storage_gb is total storage limit (600GB), cleanup_size_gb is size to delete when exceeded (40GB)"
+  },
+  "thermal_processing": {
+    "enable_thermal_processing": true,
+    "environment_temp_threshold": 30.0,
+    "note": "Thermal processing configuration: enable_thermal_processing controls thermal processing, environment_temp_threshold is minimum environment temperature to start processing"
+  }
+}

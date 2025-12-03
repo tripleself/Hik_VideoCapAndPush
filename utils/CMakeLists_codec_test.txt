@@ -1,0 +1,18 @@
+cmake_minimum_required(VERSION 3.18)
+project(CodecTest)
+
+# 设置C++标准
+set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+
+# 查找OpenCV
+find_package(OpenCV REQUIRED)
+
+# 创建可执行文件
+add_executable(codec_test check_opencv_codecs.cpp)
+
+# 链接OpenCV库
+target_link_libraries(codec_test ${OpenCV_LIBS})
+
+# 包含OpenCV头文件
+target_include_directories(codec_test PRIVATE ${OpenCV_INCLUDE_DIRS})
