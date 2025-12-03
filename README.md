@@ -20,9 +20,9 @@ IPC_Code_cmake/
   src/                  # 源码（多任务线程、控制与上报、推流等）
   external/             # 第三方（HCNetSDK、FFmpeg、dll等）
   rtspserver/           # rtsp-simple-server 可执行与配置
-  utils/                # 工具与文档
   CMakeLists.txt        # 项目主 CMake
   config.json           # 运行时配置
+  tracking_config.json  # 目标检测配置
   README.md             # 本文件
 ```
 
